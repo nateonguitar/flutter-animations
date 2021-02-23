@@ -1,7 +1,10 @@
-
 import 'package:flutter/material.dart';
 
+import 'implicit.dart';
+
 class LandingPage extends StatefulWidget {
+  static String route = 'landing';
+
   LandingPage({Key key}) : super(key: key);
 
   @override
@@ -21,10 +24,15 @@ class _LandingPageState extends State<LandingPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ListTile(
-              leading: const Icon(Icons.animation),
-              title: const Text('Implicit Animations'),
-              trailing: chevron,
+            GestureDetector(
+              child: ListTile(
+                leading: const Icon(Icons.animation),
+                title: const Text('Implicit Animations'),
+                trailing: chevron,
+              ),
+              onTap: () {
+                Navigator.pushNamed(context, ImplicitPage.route);
+              },
             )
           ],
         ),

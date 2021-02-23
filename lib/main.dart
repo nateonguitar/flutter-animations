@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'pages/implicit.dart';
 import 'pages/landing.dart';
 
 void main() {
@@ -16,6 +17,9 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: LandingPage(),
+      routes: {
+        ImplicitPage.route: (context) => ImplicitPage(),
+      }
     );
   }
 }
