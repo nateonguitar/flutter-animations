@@ -16,7 +16,6 @@ class ImplicitPage extends StatefulWidget {
 }
 
 class _ImplicitPageState extends State<ImplicitPage> {
-
   List<CurveListItem> _curves = [
     CurveListItem('Curves.bounceIn', Curves.bounceIn),
     CurveListItem('Curves.bounceInOut', Curves.bounceInOut),
@@ -59,16 +58,26 @@ class _ImplicitPageState extends State<ImplicitPage> {
     CurveListItem('Curves.linear', Curves.linear),
     CurveListItem('Curves.linearToEaseOut', Curves.linearToEaseOut),
     CurveListItem('Curves.slowMiddle', Curves.slowMiddle),
-
   ];
 
   Curve _selectedCurve = Curves.linear;
   bool _wideBox = false;
 
+  Map<String, bool> _passwordValidations = {
+    'length': false,
+    'special_char': false,
+    'number': false,
+  };
+
+  TextEditingController _textEditingController;
+
   @override
   void initState() {
     if (_selectedCurve == null) {
       _selectedCurve = _curves[0].value;
+    }
+    if (_textEditingController == null) {
+       _textEditingController = TextEditingController();
     }
     super.initState();
   }
@@ -85,37 +94,157 @@ class _ImplicitPageState extends State<ImplicitPage> {
         width: screenSize.width,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            DropdownButton(
-              value: _selectedCurve,
-              items: _curves.map((CurveListItem c) {
-                return DropdownMenuItem(
-                  child: Text(c.label),
-                  value: c.value,
-                );
-              }).toList(),
-              onChanged: (Curve value) {
-                _selectedCurve = value;
-                setState(() {});
-              },
-            ),
-            GestureDetector(
-              child: AnimatedContainer(
-                duration: Duration(seconds: 1),
-                curve: _selectedCurve,
-                color: Colors.blue[200],
-                height: 50,
-                width: _wideBox ? 50 : 150,
-                child: Center(child: Text('Grow Wide')),
-              ),
-              onTap: () {
-                _wideBox = !_wideBox;
-                setState(() {});
-              },
-            ),
+            _curvePicker(),
+            _growWideContainer(screenSize),
+            _passwordStrengthChecker(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _curvePicker() {
+    return DropdownButton(
+      value: _selectedCurve,
+      items: _curves.map((CurveListItem c) {
+        return DropdownMenuItem(
+          child: Text(c.label),
+          value: c.value,
+        );
+      }).toList(),
+      onChanged: (Curve value) {
+        _selectedCurve = value;
+        setState(() {});
+      },
+    );
+  }
+
+  Widget _growWideContainer(Size screenSize) {
+    return GestureDetector(
+      child: AnimatedContainer(
+        duration: Duration(seconds: 1),
+        curve: _selectedCurve,
+        color: Colors.blue[200],
+        height: 50,
+        width: _wideBox ? 50 : screenSize.width - 50,
+        child: Center(child: Text('Grow Wide')),
+      ),
+      onTap: () {
+        _wideBox = !_wideBox;
+        setState(() {});
+      },
+    );
+  }
+
+  Widget _passwordStrengthChecker() {
+    const Color _crossoutColor = const Color(0xAAFF0000);
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.yellow[100],
+              borderRadius: BorderRadius.circular(5),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey[400],
+                  offset: Offset(1, 1),
+                  spreadRadius: 0.5,
+                  blurRadius: 0.5,
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    alignment: Alignment.topCenter,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('- 8 or More Characters'),
+                      ),
+                      Positioned(
+                        top: 15,
+                        left: 0,
+                        child: AnimatedContainer(
+                          duration: Duration(milliseconds: 300),
+                          curve: _selectedCurve,
+                          color: _crossoutColor,
+                          height: 2,
+                          width: _passwordValidations['length'] ? 200 : 0,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Stack(
+                    alignment: Alignment.topCenter,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('- 1 Special Character'),
+                      ),
+                      Positioned(
+                        top: 15,
+                        left: 0,
+                        child: AnimatedContainer(
+                          duration: Duration(milliseconds: 750),
+                          curve: _selectedCurve,
+                          color: _crossoutColor,
+                          height: 2,
+                          width: _passwordValidations['special_char'] ? 200 : 0,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Stack(
+                    alignment: Alignment.topCenter,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('- 1 Number'),
+                      ),
+                      Positioned(
+                        top: 15,
+                        left: 0,
+                        child: AnimatedContainer(
+                          duration: Duration(milliseconds: 750),
+                          curve: _selectedCurve,
+                          color: _crossoutColor,
+                          height: 2,
+                          width: _passwordValidations['number'] ? 200 : 0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: TextFormField(
+            controller: _textEditingController,
+            onChanged: (String value) {
+              RegExp specialCharRegex = RegExp(r"[@$!%*#?&]");
+              RegExp numberRegex = RegExp(r"[0-9]");
+              _passwordValidations['length'] = value.length >= 8;
+              _passwordValidations['special_char'] = specialCharRegex.hasMatch(value);
+              _passwordValidations['number'] = numberRegex.hasMatch(value);
+              setState(() {});
+            },
+          ),
+        ),
+      ],
     );
   }
 }
