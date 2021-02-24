@@ -1,7 +1,6 @@
 import 'package:FlutterAnimations/utils/curve_list_item.dart';
 import 'package:flutter/material.dart';
 
-
 class TweenPage extends StatefulWidget {
   static String route = 'tween';
 
@@ -12,8 +11,8 @@ class TweenPage extends StatefulWidget {
 }
 
 class _TweenPageState extends State<TweenPage> {
-
   Curve _selectedCurve = Curves.linear;
+  Color _targetBoxColor = Colors.green;
 
   @override
   void initState() {
@@ -37,10 +36,57 @@ class _TweenPageState extends State<TweenPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('tween'),
+            _curvePicker(),
+            _colorChangeBox(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _curvePicker() {
+    return DropdownButton(
+      value: _selectedCurve,
+      items: CurveListItem.curves.map((CurveListItem c) {
+        return DropdownMenuItem(
+          child: Text(c.label),
+          value: c.value,
+        );
+      }).toList(),
+      onChanged: (Curve value) {
+        _selectedCurve = value;
+        setState(() {});
+      },
+    );
+  }
+
+  Widget _colorChangeBox() {
+    return TweenAnimationBuilder<Color>(
+      curve: _selectedCurve,
+      onEnd: () {
+        if (_targetBoxColor == Colors.green) {
+          _targetBoxColor = Colors.yellow;
+        } else if (_targetBoxColor == Colors.yellow) {
+          _targetBoxColor = Colors.blue;
+        } else if (_targetBoxColor == Colors.blue) {
+          _targetBoxColor = Colors.red;
+        } else {
+          _targetBoxColor = Colors.green;
+        }
+        setState(() {});
+      },
+      tween: ColorTween(
+        begin: Colors.red,
+        end: _targetBoxColor,
+      ),
+      duration: Duration(milliseconds: 1500),
+      builder: (BuildContext _, Color animatedColor, Widget __) {
+        return Container(
+          width: 50,
+          height: 50,
+          color: animatedColor,
+        );
+      },
     );
   }
 }
