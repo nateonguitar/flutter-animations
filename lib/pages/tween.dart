@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:FlutterAnimations/utils/curve_list_item.dart';
@@ -15,7 +16,7 @@ class TweenPage extends StatefulWidget {
 class _TweenPageState extends State<TweenPage> {
   Curve _selectedCurve = Curves.linear;
   Color _targetBoxColor = Colors.green;
-  double _targetAngle = pi * 2;
+  double _targetAngle = 0;
 
   @override
   void initState() {
@@ -41,6 +42,10 @@ class _TweenPageState extends State<TweenPage> {
           children: [
             _curvePicker(),
             _colorChangeBox(),
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Text('Click the icon to rotate it'),
+            ),
             _spinningIcon(),
           ],
         ),
@@ -95,26 +100,28 @@ class _TweenPageState extends State<TweenPage> {
   }
 
   Widget _spinningIcon() {
-    return TweenAnimationBuilder<double>(
-      curve: _selectedCurve,
-      duration: Duration(milliseconds: 2000),
-      onEnd: () {
-        _targetAngle = _targetAngle == 0 ? pi * 2 : 0;
-        setState(() {});
+    return GestureDetector(
+      onTap: () {
+          _targetAngle = _targetAngle == 0 ? pi : 0;
+          setState(() {});
       },
-      tween: Tween(
-        begin: 0,
-        end: _targetAngle,
+      child: TweenAnimationBuilder<double>(
+        curve: _selectedCurve,
+        duration: Duration(milliseconds: 1000),
+        tween: Tween(
+          begin: 0,
+          end: _targetAngle,
+        ),
+        builder: (BuildContext _, double animatedAngle, Widget __) {
+          return Transform.rotate(
+            angle: animatedAngle,
+            child: Icon(
+              Icons.arrow_upward,
+              size: 50,
+            ),
+          );
+        },
       ),
-      builder: (BuildContext _, double animatedAngle, Widget __) {
-        return Transform.rotate(
-          angle: animatedAngle,
-          child: Icon(
-            Icons.ac_unit,
-            size: 50,
-          ),
-        );
-      },
     );
   }
 }
