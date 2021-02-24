@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:FlutterAnimations/utils/curve_list_item.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +15,7 @@ class TweenPage extends StatefulWidget {
 class _TweenPageState extends State<TweenPage> {
   Curve _selectedCurve = Curves.linear;
   Color _targetBoxColor = Colors.green;
+  double _targetAngle = pi * 2;
 
   @override
   void initState() {
@@ -38,6 +41,7 @@ class _TweenPageState extends State<TweenPage> {
           children: [
             _curvePicker(),
             _colorChangeBox(),
+            _spinningIcon(),
           ],
         ),
       ),
@@ -85,6 +89,30 @@ class _TweenPageState extends State<TweenPage> {
           width: 50,
           height: 50,
           color: animatedColor,
+        );
+      },
+    );
+  }
+
+  Widget _spinningIcon() {
+    return TweenAnimationBuilder<double>(
+      curve: _selectedCurve,
+      duration: Duration(milliseconds: 2000),
+      onEnd: () {
+        _targetAngle = _targetAngle == 0 ? pi * 2 : 0;
+        setState(() {});
+      },
+      tween: Tween(
+        begin: 0,
+        end: _targetAngle,
+      ),
+      builder: (BuildContext _, double animatedAngle, Widget __) {
+        return Transform.rotate(
+          angle: animatedAngle,
+          child: Icon(
+            Icons.ac_unit,
+            size: 50,
+          ),
         );
       },
     );
