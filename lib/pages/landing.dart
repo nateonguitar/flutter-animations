@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'implicit.dart';
+import 'tween.dart';
 
 class LandingPage extends StatefulWidget {
   static String route = 'landing';
@@ -33,7 +34,17 @@ class _LandingPageState extends State<LandingPage> {
               onTap: () {
                 Navigator.pushNamed(context, ImplicitPage.route);
               },
-            )
+            ),
+            GestureDetector(
+              child: ListTile(
+                leading: const Icon(Icons.adjust_outlined),
+                title: const Text('Tween Animations'),
+                trailing: chevron,
+              ),
+              onTap: () {
+                Navigator.pushNamed(context, TweenPage.route);
+              },
+            ),
           ],
         ),
       ),

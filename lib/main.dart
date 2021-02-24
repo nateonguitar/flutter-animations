@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'pages/implicit.dart';
 import 'pages/landing.dart';
+import 'pages/tween.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
       home: LandingPage(),
       routes: {
         ImplicitPage.route: (context) => ImplicitPage(),
+        TweenPage.route: (context) => TweenPage(),
       }
     );
   }
