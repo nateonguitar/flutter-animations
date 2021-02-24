@@ -139,7 +139,6 @@ class _ImplicitPageState extends State<ImplicitPage> {
   }
 
   Widget _passwordStrengthChecker() {
-    const Color _crossoutColor = const Color(0xAAFF0000);
     return Column(
       children: [
         Padding(
@@ -165,66 +164,9 @@ class _ImplicitPageState extends State<ImplicitPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Stack(
-                    alignment: Alignment.topCenter,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('- 8 or More Characters'),
-                      ),
-                      Positioned(
-                        top: 15,
-                        left: 0,
-                        child: AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
-                          curve: _selectedCurve,
-                          color: _crossoutColor,
-                          height: 2,
-                          width: _passwordValidations['length'] ? 200 : 0,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Stack(
-                    alignment: Alignment.topCenter,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('- 1 Special Character'),
-                      ),
-                      Positioned(
-                        top: 15,
-                        left: 0,
-                        child: AnimatedContainer(
-                          duration: Duration(milliseconds: 750),
-                          curve: _selectedCurve,
-                          color: _crossoutColor,
-                          height: 2,
-                          width: _passwordValidations['special_char'] ? 200 : 0,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Stack(
-                    alignment: Alignment.topCenter,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('- 1 Number'),
-                      ),
-                      Positioned(
-                        top: 15,
-                        left: 0,
-                        child: AnimatedContainer(
-                          duration: Duration(milliseconds: 750),
-                          curve: _selectedCurve,
-                          color: _crossoutColor,
-                          height: 2,
-                          width: _passwordValidations['number'] ? 200 : 0,
-                        ),
-                      ),
-                    ],
-                  ),
+                  _animatedValidation(label: "8 or More Characters", validationKey: 'length'),
+                  _animatedValidation(label: "1 Special Character", validationKey: 'special_char'),
+                  _animatedValidation(label: "1 Number", validationKey: 'number'),
                 ],
               ),
             ),
@@ -245,6 +187,33 @@ class _ImplicitPageState extends State<ImplicitPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _animatedValidation({@required String label, @required String validationKey, int milliseconds = 750}) {
+    const Color _crossoutColor = const Color(0xAAFF0000);
+    return Container(
+      width: double.infinity,
+      child: Stack(
+        alignment: Alignment.centerLeft,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text('- $label'),
+          ),
+          Positioned(
+            top: 15,
+            left: 0,
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: milliseconds),
+              curve: _selectedCurve,
+              color: _crossoutColor,
+              height: 2,
+              width: _passwordValidations[validationKey] ? 200 : 0,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
